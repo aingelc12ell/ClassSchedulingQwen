@@ -8,7 +8,7 @@ class CreateClassesTable extends Migration
     public function up()
     {
         Schema::create('classes', function (Blueprint $table) {
-            $table->string('class_id')->primary();
+            $table->integer('class_id')->primary();
             $table->string('subject_id');
             $table->string('teacher_id');
             $table->string('room_id');

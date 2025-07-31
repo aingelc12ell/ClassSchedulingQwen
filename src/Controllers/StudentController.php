@@ -14,7 +14,8 @@ class StudentController
         $validator = new ValidationService();
 
         $rules = [
-            'id' => 'required|string|max:50|unique:App\Models\Student,id',
+            #'id' => 'required|integer|unique:App\Models\Student,id',
+            'cardid' => 'required|string|max:50|unique:App\Models\Student,cardid',
             'name' => 'required|string|min:2|max:100',
             'curriculumId' => 'required|integer|exists_in:App\Models\Curriculum,id',
             'enrollmentCount' => 'integer|min:1|max:10'

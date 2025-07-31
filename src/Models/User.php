@@ -10,6 +10,21 @@ class User extends Model
     protected $table = 'users';
     protected $fillable = ['username', 'email', 'password', 'role'];
     protected $hidden = ['password']; // Never expose in JSON
+    
+    public $timestamps = false;
+    
+    /**
+     * Database schema as generic SQL CREATE TABLE statement
+     */
+    public static $schema = "CREATE TABLE users (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        username VARCHAR(50) NOT NULL,
+        email VARCHAR(100) NOT NULL,
+        password VARCHAR(255) NOT NULL,
+        role VARCHAR(20) NOT NULL DEFAULT 'user',
+        UNIQUE KEY unique_username (username),
+        UNIQUE KEY unique_email (email)
+    )";
 
     public function verifyPassword(string $password): bool
     {

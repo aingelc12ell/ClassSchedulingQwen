@@ -14,7 +14,8 @@ class SubjectController
         $validator = new ValidationService();
 
         $rules = [
-            'id' => 'required|string|min:1|unique:App\Models\Subject,id',
+            #'id' => 'required|integer|min:1|unique:App\Models\Subject,id',
+            'code' => 'required|string|min:1|unique:App\Models\Subject,code',
             'title' => 'required|string|min:2|max:255',
             'units' => 'required|integer|min:1',
             'weeklyHours' => 'required|numeric|min:1|subject_hours',

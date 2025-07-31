@@ -22,7 +22,7 @@ class ClassController
         $validator = new ValidationService();
 
         $rules = [
-            'class_id' => 'required|string|max:50',
+            #'class_id' => 'required|integer',
             'subject_id' => 'required|integer|exists_in:App\Models\Subject,id',
             'teacher_id' => 'required|integer|exists_in:App\Models\Teacher,id',
             'room_id' => 'required|integer|exists_in:App\Models\Room,id',
@@ -58,7 +58,7 @@ class ClassController
 
         try {
             $class = ClassModel::create([
-                'class_id' => $data['class_id'],
+                #'class_id' => $data['class_id'],
                 'subject_id' => $data['subject_id'],
                 'teacher_id' => $data['teacher_id'],
                 'room_id' => $data['room_id'],

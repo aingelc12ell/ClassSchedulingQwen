@@ -15,6 +15,7 @@ class CurriculumController
 
         $rules = [
             'id' => 'required|integer|unique:App\Models\Curriculum,id',
+            'code' => 'required|string|unique:App\Models\Curriculum,code',
             'name' => 'required|string|min:2|max:100',
             'term' => 'required|string|max:20',
             'subjectIds' => 'required|json_array'

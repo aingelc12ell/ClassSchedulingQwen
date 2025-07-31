@@ -24,7 +24,8 @@ class TeacherController
         }*/
 
         $rules = [
-            'id' => 'required|string|unique:App\Models\Teacher,id',
+            #'id' => 'required|integer|unique:App\Models\Teacher,id',
+            'code' => 'required|string|unique:App\Models\Teacher,code',
             'name' => 'required|string|min:2',
             'qualifiedSubjectIds' => 'required|array|json_array',
         ];

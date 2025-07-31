@@ -14,7 +14,8 @@ class RoomController
         $validator = new ValidationService();
 
         $rules = [
-            'id' => 'required|string|max:50|unique:App\Models\Room,id',
+            #'id' => 'required|integer|unique:App\Models\Room,id',
+            'name' => 'required|string|max:50|unique:App\Models\Room,name',
             'capacity' => 'required|integer|min:1|max:1000'
         ];
 
