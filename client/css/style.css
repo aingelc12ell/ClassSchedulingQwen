@@ -1,0 +1,20 @@
+body {
+    background-color: #f8f9fa;
+}
+
+.table-sm th, .table-sm td {
+    font-size: 0.9em;
+    padding: 0.25rem 0.5rem;
+}
+
+.list-group-item {
+    font-size: 0.9em;
+}
+
+.nav-tabs .nav-link {
+    font-size: 0.95em;
+}
+
+.btn-sm {
+    font-size: 0.85em;
+}
