@@ -1,17 +1,13 @@
 <?php
 namespace App\Models;
 
-class Subject
-{
-    public string $id;
-    public string $title;
-    public int $units;
-    public int $weeklyHours;
+use Illuminate\Database\Eloquent\Model;
 
-    public function __construct($data) {
-        $this->id = $data['id'];
-        $this->title = $data['title'];
-        $this->units = $data['units'];
-        $this->weeklyHours = $data['weeklyHours'];
-    }
+class Subject extends Model
+{
+    protected $table = 'subjects';
+    protected $fillable = ['id', 'title', 'units', 'weekly_hours'];
+    public $incrementing = false;
+    protected $keyType = 'string';
+    public $timestamps = true;
 }

@@ -1,17 +1,19 @@
 <?php
 namespace App\Models;
 
-class Student
-{
-    public string $id;
-    public string $name;
-    public string $curriculumId;
-    public int $enrollmentCount; // Number of students enrolled
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-    public function __construct($data) {
-        $this->id = $data['id'];
-        $this->name = $data['name'];
-        $this->curriculumId = $data['curriculumId'];
-        $this->enrollmentCount = $data['enrollmentCount'] ?? 1;
+class Student extends Model
+{
+    protected $table = 'students';
+    protected $fillable = ['id', 'name', 'curriculumId', 'enrollmentCount'];
+    public $incrementing = false;
+    protected $keyType = 'string';
+    public $timestamps = true;
+
+    public function curriculum(): BelongsTo
+    {
+        return $this->belongsTo(Curriculum::class, 'curriculumId', 'id');
     }
 }

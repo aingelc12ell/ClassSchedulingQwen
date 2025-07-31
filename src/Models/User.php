@@ -27,7 +27,6 @@ class User extends Model
             'uid' => $this->id,
             'username' => $this->username,
             'role' => $this->role,
-            'username' => $this->username
         ];
 
         return JWT::encode($token, getenv('JWT_SECRET'), 'HS256');

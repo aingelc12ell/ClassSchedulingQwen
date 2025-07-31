@@ -2,6 +2,8 @@
 
 A full-featured, modular class scheduling system built with PHP, Slim Framework 4, Eloquent ORM, and jQuery. This system automates weekly class scheduling while respecting academic constraints, teacher qualifications, room availability, and student curricula — with support for manual overrides, conflict exemptions, and secure JWT authentication.
 
+Improvements and updates are generated from other models and AI tools. Integrations are done manually for real-life implementations.
+
 ## Features
 
 - Automated Scheduling Engine
@@ -17,6 +19,7 @@ A full-featured, modular class scheduling system built with PHP, Slim Framework 
 ## Project Structure
 ```
 /scheduling-system/
+├── client/               # Frontend Dashboard (can be installed or ran separately)
 ├── config/               # Configuration files
 ├── public/               # Public entry point (index.php)
 ├── src/
@@ -26,7 +29,7 @@ A full-featured, modular class scheduling system built with PHP, Slim Framework 
 │   ├── Middleware/       # Request processing (auth, JSON parsing)
 │   └── Routes/           # API route definitions
 ├── migrations/           # Database schema migrations
-├── public_html/          # Frontend (HTML, JS, CSS)
+├── tests/                # Unit and functionality test snippets
 ├── .env                  # Environment variables
 └── composer.json         # PHP dependencies
 ```

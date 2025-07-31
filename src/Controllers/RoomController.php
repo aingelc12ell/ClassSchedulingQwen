@@ -4,22 +4,37 @@ namespace App\Controllers;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use App\Models\Room as RoomModel;
+use App\Services\ValidationService;
 
 class RoomController
 {
     public function create(Request $request, Response $response): Response
     {
         $data = $request->getParsedBody();
+        $validator = new ValidationService();
 
-        $required = ['id', 'capacity'];
-        $missing = array_filter($required, fn($key) => !isset($data[$key]));
-        if (!empty($missing)) {
-            return $response->withJson(['error' => 'Missing fields', 'fields' => $missing], 400);
+        $rules = [
+            'id' => 'required|string|max:50|unique:App\Models\Room,id',
+            'capacity' => 'required|integer|min:1|max:1000'
+        ];
+
+        if (!$validator->validate($data, $rules)) {
+            return $response->withJson([
+                'error' => 'Validation failed',
+                'errors' => $validator->getErrors()
+            ], 400);
         }
 
-        if (!is_numeric($data['capacity']) || $data['capacity'] <= 0) {
-            return $response->withJson(['error' => 'Capacity must be a positive number'], 400);
-        }
+        // Previously deleted manual validation code:
+        // $required = ['id', 'capacity'];
+        // $missing = array_filter($required, fn($key) => !isset($data[$key]));
+        // if (!empty($missing)) {
+        //     return $response->withJson(['error' => 'Missing fields', 'fields' => $missing], 400);
+        // }
+        //
+        // if (!is_numeric($data['capacity']) || $data['capacity'] <= 0) {
+        //     return $response->withJson(['error' => 'Capacity must be a positive number'], 400);
+        // }
 
         try {
             $room = RoomModel::create([

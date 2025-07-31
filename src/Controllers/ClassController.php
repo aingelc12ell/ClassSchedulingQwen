@@ -5,6 +5,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use App\Models\ClassModel;
 use App\Services\SchedulingEngine;
+use App\Services\ValidationService;
 
 class ClassController
 {
@@ -13,6 +14,64 @@ class ClassController
     public function __construct($storagePath = __DIR__ . '/../../data/storage.json')
     {
         $this->storage = json_decode(file_get_contents($storagePath), true) ?: [];
+    }
+
+    public function create(Request $request, Response $response): Response
+    {
+        $data = $request->getParsedBody();
+        $validator = new ValidationService();
+
+        $rules = [
+            'class_id' => 'required|string|max:50',
+            'subject_id' => 'required|integer|exists_in:App\Models\Subject,id',
+            'teacher_id' => 'required|integer|exists_in:App\Models\Teacher,id',
+            'room_id' => 'required|integer|exists_in:App\Models\Room,id',
+            'time_slot_id' => 'required|integer|exists_in:App\Models\TimeSlot,id',
+            'day' => 'required|string|min:3|max:3|in:Mon,Tue,Wed,Thu,Fri,Sat,Sun',
+            'term' => 'required|string|max:20',
+            'is_override' => 'boolean|override_allowed'
+        ];
+
+        if (!$validator->validate($data, $rules)) {
+            return $response->withJson([
+                'error' => 'Validation failed',
+                'errors' => $validator->getErrors()
+            ], 400);
+        }
+
+        // Previously deleted manual validation code:
+        // $required = ['class_id', 'subject_id', 'teacher_id', 'room_id', 'time_slot_id', 'day', 'term'];
+        // $missing = array_filter($required, fn($key) => !isset($data[$key]));
+        // if (!empty($missing)) {
+        //     return $response->withJson(['error' => 'Missing fields', 'fields' => $missing], 400);
+        // }
+        //
+        // // Validate day format (3 characters)
+        // if (strlen($data['day']) !== 3) {
+        //     return $response->withJson(['error' => 'Day must be 3 characters (e.g., Mon, Tue)'], 400);
+        // }
+        //
+        // // Validate time_slot_id is numeric
+        // if (!is_numeric($data['time_slot_id'])) {
+        //     return $response->withJson(['error' => 'time_slot_id must be numeric'], 400);
+        // }
+
+        try {
+            $class = ClassModel::create([
+                'class_id' => $data['class_id'],
+                'subject_id' => $data['subject_id'],
+                'teacher_id' => $data['teacher_id'],
+                'room_id' => $data['room_id'],
+                'time_slot_id' => (int)$data['time_slot_id'],
+                'day' => $data['day'],
+                'term' => $data['term'],
+                'is_override' => $data['is_override'] ?? false,
+            ]);
+
+            return $response->withJson(['class' => $class], 201);
+        } catch (\Exception $e) {
+            return $response->withJson(['error' => 'Failed to create class'], 500);
+        }
     }
     public function generateSchedule(Request $request, Response $response): Response
     {

@@ -44,68 +44,68 @@ class ValidationService
         switch ($ruleName) {
             case 'required':
                 if ($value === null || $value === '') {
-                    return "The {$field} field is required.";
+                    return ["The {$field} field is required."];
                 }
                 break;
 
             case 'string':
                 if (!is_string($value)) {
-                    return "The {$field} must be a string.";
+                    return ["The {$field} must be a string."];
                 }
                 break;
 
             case 'integer':
             case 'int':
                 if (!is_numeric($value) || (int)$value != $value) {
-                    return "The {$field} must be an integer.";
+                    return ["The {$field} must be an integer."];
                 }
                 break;
 
             case 'numeric':
                 if (!is_numeric($value)) {
-                    return "The {$field} must be a number.";
+                    return ["The {$field} must be a number."];
                 }
                 break;
 
             case 'array':
                 if (!is_array($value)) {
-                    return "The {$field} must be an array.";
+                    return ["The {$field} must be an array."];
                 }
                 break;
 
             case 'boolean':
             case 'bool':
                 if (!in_array($value, [true, false, 0, 1, '0', '1'], true)) {
-                    return "The {$field} must be a boolean.";
+                    return ["The {$field} must be a boolean."];
                 }
                 break;
 
             case 'email':
                 if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
-                    return "The {$field} must be a valid email address.";
+                    return ["The {$field} must be a valid email address."];
                 }
                 break;
 
             case 'min':
                 if (is_numeric($value) && $value < (float)$params[0]) {
-                    return "The {$field} must be at least {$params[0]}.";
+                    return ["The {$field} must be at least {$params[0]}."];
                 } elseif (is_string($value) && strlen($value) < (int)$params[0]) {
-                    return "The {$field} must be at least {$params[0]} characters.";
+                    return ["The {$field} must be at least {$params[0]} characters."];
                 }
                 break;
 
             case 'max':
                 if (is_numeric($value) && $value > (float)$params[0]) {
-                    return "The {$field} must not exceed {$params[0]}.";
+                    return ["The {$field} must not exceed {$params[0]}."];
                 } elseif (is_string($value) && strlen($value) > (int)$params[0]) {
-                    return "The {$field} must not exceed {$params[0]} characters.";
+                    return ["The {$field} must not exceed {$params[0]} characters."];
                 }
                 break;
 
             case 'in':
                 $allowed = $params;
                 if (!in_array($value, $allowed)) {
-                    return "The {$field} must be one of: " . implode(', ', $allowed) . ".";
+                    return ["The {$field} must be one of: " . implode(', ', $allowed) . "."];
                 }
                 break;
 
@@ -113,19 +113,19 @@ class ValidationService
                 $format = $params[0] ?? 'Y-m-d H:i:s';
                 $d = \DateTime::createFromFormat($format, $value);
                 if (!$d || $d->format($format) !== $value) {
-                    return "The {$field} must match the format {$format}.";
+                    return ["The {$field} must match the format {$format}."];
                 }
                 break;
 
             case 'time':
                 if (!preg_match('/^([01][0-9]|2[0-3]):([0-5][0-9])$/', $value)) {
-                    return "The {$field} must be a valid time in HH:MM format.";
+                    return ["The {$field} must be a valid time in HH:MM format."];
                 }
                 break;
 
             case 'json_array':
                 if (!is_array($value) || empty($value)) {
-                    return "The {$field} must be a non-empty array.";
+                    return ["The {$field} must be a non-empty array."];
                 }
                 break;
 
@@ -136,10 +136,10 @@ class ValidationService
                     $model = new $modelClass();
                     $exists = $model->newModelQuery()->where($checkField, $value)->exists();
                     if (!$exists) {
-                        return "The selected {$field} is invalid or does not exist.";
+                        return ["The selected {$field} is invalid or does not exist."];
                     }
                 } catch (\Exception $e) {
-                    return "Error validating {$field}: " . $e->getMessage();
+                    return ["Error validating {$field}: " . $e->getMessage()];
                 }
                 break;
 
@@ -156,10 +156,10 @@ class ValidationService
                         $query->where($primaryKey, '!=', $ignoreId);
                     }
                     if ($query->exists()) {
-                        return "The {$field} has already been taken.";
+                        return ["The {$field} has already been taken."];
                     }
                 } catch (\Exception $e) {
-                    return "Error checking uniqueness of {$field}.";
+                    return ["Error checking uniqueness of {$field}."];
                 }
                 break;
 
@@ -167,7 +167,7 @@ class ValidationService
                 $units = $allData['units'] ?? null;
                 $weeklyHours = $value;
                 if ($units && $weeklyHours && $weeklyHours < $units) {
-                    return "Weekly hours must be at least equal to units.";
+                    return ["Weekly hours must be at least equal to units."];
                 }
                 break;
 
@@ -179,14 +179,14 @@ class ValidationService
                     // If not override, ensure it's not modifying auto-gen class
                     $existing = \App\Models\ClassModel::find($classId);
                     if ($existing && $existing->is_override) {
-                        return "Auto-generated classes cannot be reverted.";
+                        return ["Auto-generated classes cannot be reverted."];
                     }
                 }
                 break;
 
             default:
                 // Custom or unknown rule
-                return "Unknown validation rule: {$ruleName}.";
+                return ["Unknown validation rule: {$ruleName}."];
         }
 
         return true;

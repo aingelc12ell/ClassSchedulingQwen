@@ -1,15 +1,16 @@
 <?php
 namespace App\Models;
 
-class Teacher
-{
-    public string $id;
-    public string $name;
-    public array $qualifiedSubjectIds;
+use Illuminate\Database\Eloquent\Model;
 
-    public function __construct($data) {
-        $this->id = $data['id'];
-        $this->name = $data['name'];
-        $this->qualifiedSubjectIds = $data['qualifiedSubjectIds'];
-    }
+class Teacher extends Model
+{
+    protected $table = 'teachers';
+    protected $fillable = ['id', 'name', 'qualified_subject_ids'];
+    protected $casts = [
+        'qualified_subject_ids' => 'array'
+    ];
+    public $incrementing = false;
+    protected $keyType = 'string';
+    public $timestamps = true;
 }

@@ -1,13 +1,13 @@
 <?php
 namespace App\Models;
 
-class Room
-{
-    public string $id;
-    public int $capacity;
+use Illuminate\Database\Eloquent\Model;
 
-    public function __construct($data) {
-        $this->id = $data['id'];
-        $this->capacity = $data['capacity'];
-    }
+class Room extends Model
+{
+    protected $table = 'rooms';
+    protected $fillable = ['id', 'capacity'];
+    public $incrementing = false;
+    protected $keyType = 'string';
+    public $timestamps = true;
 }

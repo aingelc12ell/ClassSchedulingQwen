@@ -1,17 +1,16 @@
 <?php
 namespace App\Models;
 
-class Curriculum
-{
-    public string $id;
-    public string $name;
-    public string $term;
-    public array $subjectIds;
+use Illuminate\Database\Eloquent\Model;
 
-    public function __construct($data) {
-        $this->id = $data['id'];
-        $this->name = $data['name'];
-        $this->term = $data['term'];
-        $this->subjectIds = $data['subjectIds'];
-    }
+class Curriculum extends Model
+{
+    protected $table = 'curriculums';
+    protected $fillable = ['id', 'name', 'term', 'subject_ids'];
+    protected $casts = [
+        'subject_ids' => 'array'
+    ];
+    public $incrementing = false;
+    protected $keyType = 'string';
+    public $timestamps = true;
 }
