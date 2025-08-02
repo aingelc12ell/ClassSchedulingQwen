@@ -16,8 +16,8 @@ $app->add(new JwtAuthMiddleware());
 
 #$container = $app->getContainer();
 $builder = new \DI\ContainerBuilder();
-$builder->enableCompilation(__DIR__ . '/tmp');
-$builder->writeProxiesToFile(true, __DIR__ . '/tmp/proxies');
+$builder->enableCompilation(dirname(__DIR__) . '/tmp');
+$builder->writeProxiesToFile(true, dirname(__DIR__) . '/tmp/proxies');
 $container = $builder->build();
 
 $app = Bridge::create($container);
