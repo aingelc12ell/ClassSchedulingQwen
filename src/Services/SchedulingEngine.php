@@ -14,7 +14,7 @@ class SchedulingEngine
 
     private function loadExemptions(): void
     {
-        $exemptions = ConflictExemption::where('expires_at', '>', now())
+        $exemptions = ConflictExemption::where('expires_at', '>', $this->now())
             ->orWhereNull('expires_at')
             ->get();
 
@@ -160,5 +160,10 @@ class SchedulingEngine
         }
 
         return $schedule;
+    }
+
+    private function now()
+    {
+        return date('Y-m-d H:i:s');
     }
 }

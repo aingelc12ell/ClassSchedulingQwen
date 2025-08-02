@@ -3,8 +3,6 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-// Load DB connection and Eloquent
-require_once __DIR__ . '/../config/database.php';
 
 use DI\Bridge\Slim\Bridge;
 use App\Middleware\{JsonBodyParserMiddleware, JwtAuthMiddleware};
@@ -15,6 +13,10 @@ $app->addBodyParsingMiddleware();
 $app->add(new JsonBodyParserMiddleware());
 $app->add(new JwtAuthMiddleware());
 
+
+// Load DB connection and Eloquent
+require_once __DIR__ . '/../config/database.php';
+
 #$container = $app->getContainer();
 $builder = new \DI\ContainerBuilder();
 $builder->enableCompilation(dirname(__DIR__) . '/tmp');
@@ -23,8 +25,12 @@ $container = $builder->build();
 
 $app = Bridge::create($container);
 
-$routes = require __DIR__ . '/../src/Routes/routes.php';
-$routes($app);
+# $routes = require __DIR__ . '/../src/Routes/routes.php';
+# $routes($app);
+// Modular Route Includes
+(require __DIR__ . '/../src/Routes/admin.php')($app);
+(require __DIR__ . '/../src/Routes/protected.php')($app);
+(require __DIR__ . '/../src/Routes/public.php')($app);
 
 $app->add(function ($request, $handler) {
     $response = $handler->handle($request);
