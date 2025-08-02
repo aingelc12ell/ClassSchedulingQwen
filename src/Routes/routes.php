@@ -38,6 +38,7 @@ return function (App $app) {
     $app->post('/exemptions', [\App\Controllers\ExemptionController::class, 'create']);
 };*/
 
+
 include __DIR__.'/public.php';
 include __DIR__.'/protected.php';
 include __DIR__.'/admin.php';

@@ -1,0 +1,17 @@
+# Start the stack
+docker-compose up -d
+
+# Install Composer deps
+docker-compose exec app composer install
+
+# Run migrations
+docker-compose exec app php vendor/bin/phinx migrate
+
+# Access shell
+docker-compose exec app bash
+
+# View logs
+docker-compose logs -f app
+
+# Run tests
+docker-compose exec app vendor/bin/phpunit

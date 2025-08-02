@@ -1,5 +1,22 @@
 <?php
+
+
 require_once __DIR__ . '/../vendor/autoload.php';
+
+use Slim\Factory\AppFactory;
+use App\Middleware\{JsonBodyParserMiddleware, JwtAuthMiddleware};
+
+$app = AppFactory::create();
+$app->addBodyParsingMiddleware();
+$app->add(new JsonBodyParserMiddleware());
+$app->add(new JwtAuthMiddleware());
+
+$routes = require __DIR__ . '/../src/Routes/routes.php';
+$routes($app);
+
+$app->run();
+
+/*require_once __DIR__ . '/../vendor/autoload.php';
 
 use Slim\Factory\AppFactory;
 use App\Middleware\{JsonBodyParserMiddleware, JwtAuthMiddleware};
@@ -35,4 +52,4 @@ $app->add(function ($request, $handler) {
         ->withHeader('Access-Control-Allow-Credentials', 'true');
 });
 
-$app->run();
+$app->run();*/

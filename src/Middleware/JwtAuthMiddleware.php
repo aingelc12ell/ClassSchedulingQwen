@@ -1,4 +1,54 @@
 <?php
+
+namespace App\Middleware;
+
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Server\RequestHandlerInterface as Handler;
+use Psr\Http\Message\ResponseInterface as Response;
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
+
+class JwtAuthMiddleware implements MiddlewareInterface
+{
+    private array $skipPaths = ['/login', '/register'];
+
+    public function process(Request $request, Handler $handler): Response
+    {
+        $path = $request->getUri()->getPath();
+        foreach($this->skipPaths as $skip){
+            if(strpos($path, $skip) !== false) return $handler->handle($request);
+        }
+
+        $token = $this->getTokenFromRequest($request);
+        if(!$token) return $this->unauthorized($response, 'Token not provided');
+
+        try{
+            JWT::decode($token, new Key($_ENV['JWT_SECRET'], 'HS256'));
+            $request = $request->withAttribute('token', $token);
+        } catch(\Exception $e){
+            return $this->unauthorized($response, 'Invalid or expired token');
+        }
+
+        return $handler->handle($request);
+    }
+
+    private function getTokenFromRequest(Request $request): ?string
+    {
+        $header = $request->getHeaderLine('Authorization');
+        if(preg_match('/Bearer\s(\S+)/', $header, $matches)) return $matches[1];
+        return null;
+    }
+
+    private function unauthorized(Response $response, string $message): Response
+    {
+        $payload = json_encode(['error' => $message]);
+        $response->getBody()->write($payload);
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(401);
+    }
+}
+
+/*
 namespace App\Middleware;
 
 use Psr\Http\Server\MiddlewareInterface;
@@ -60,4 +110,4 @@ class JwtAuthMiddleware implements MiddlewareInterface
             ->withHeader('Content-Type', 'application/json')
             ->withStatus(401);
     }
-}
+}*/

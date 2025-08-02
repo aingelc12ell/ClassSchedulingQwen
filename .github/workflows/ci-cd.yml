@@ -1,0 +1,171 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+
+env:
+  DB_HOST: localhost
+  DB_DATABASE: scheduling_db
+  DB_USERNAME: root
+  DB_PASSWORD: password
+  JWT_SECRET: your_strong_32char_secret_key_here_12345678
+
+jobs:
+  # ==================================================
+  # 🔍 LINT: Check PHP syntax and coding standards
+  # ==================================================
+  lint:
+    runs-on: ubuntu-latest
+    name: Lint PHP Code
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, dom, fileinfo, pdo_mysql
+          ini-values: post_max_size=256M, short_open_tag=Off
+
+      - name: Install Dependencies
+        run: composer install --no-progress --no-suggest
+
+      - name: Run PHP Linter
+        run: find src/ public/ migrations/ db/ -name "*.php" -exec php -l {} \;
+
+      - name: Run PHP_CodeSniffer
+        run: |
+          composer require --dev squizlabs/php_codesniffer
+          vendor/bin/phpcs src/ --standard=PSR12
+
+  # ==================================================
+  # 🧪 TEST: Static Analysis + Unit Tests
+  # ==================================================
+  test:
+    runs-on: ubuntu-latest
+    name: Run Tests & Static Analysis
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, dom, pdo, pdo_mysql, sqlite
+          ini-values: post_max_size=256M, short_open_tag=Off
+
+      - name: Install Dependencies
+        run: composer install --no-progress --no-suggest
+
+      - name: Start MySQL Service
+        uses: sharatsc/mysql-action@v1
+        with:
+          mysql version: '8.0'
+          mysql root password: ${{ env.DB_PASSWORD }}
+
+      - name: Create Database
+        run: |
+          mysql -h ${{ env.DB_HOST }} -u ${{ env.DB_USERNAME }} -p${{ env.DB_PASSWORD }} -e "CREATE DATABASE IF NOT EXISTS ${{ env.DB_DATABASE }} CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+
+      - name: Run Phinx Migrations
+        run: |
+          cp phinx.php phinx.php.bak
+          # Inject env vars into phinx.php (safe for CI)
+          sed -i "s/\$_ENV\['DB_HOST'\] ?? 'localhost'/'${{ env.DB_HOST }}'/g" phinx.php
+          sed -i "s/\$_ENV\['DB_PORT'\] ?? 3306/'3306'/g" phinx.php
+          sed -i "s/\$_ENV\['DB_DATABASE'\]/'${{ env.DB_DATABASE }}'/g" phinx.php
+          sed -i "s/\$_ENV\['DB_USERNAME'\]/'${{ env.DB_USERNAME }}'/g" phinx.php
+          sed -i "s/\$_ENV\['DB_PASSWORD'\]/'${{ env.DB_PASSWORD }}'/g" phinx.php
+          vendor/bin/phinx migrate
+
+      - name: Run PHPStan (Static Analysis)
+        run: |
+          composer require --dev phpstan/phpstan
+          vendor/bin/phpstan analyse src/
+
+      - name: Run PHPUnit Tests
+        run: |
+          # Example: Create a simple test runner
+          mkdir -p tests
+          cat > tests/SchedulingTest.php << 'EOT'
+  <?php
+  use PHPUnit\Framework\TestCase;
+  final class SchedulingTest extends TestCase
+  {
+    public function testTrueIsTrue(): void
+      {
+        \$this->assertTrue(true);
+      }
+  }
+  EOT
+  
+  # Run PHPUnit
+  vendor/bin/phpunit --bootstrap vendor/autoload.php tests/
+
+# ==================================================
+# 🚀 DEPLOY: To Staging or Production via SSH
+# ==================================================
+deploy:
+  needs: [lint, test]
+  runs-on: ubuntu-latest
+  name: Deploy to Server
+  if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Deploy via SSH
+      uses: appleboy/scp-action@v0.1.5
+      with:
+        host: ${{ secrets.DEPLOY_HOST }}
+        username: ${{ secrets.DEPLOY_USER }}
+        key: ${{ secrets.DEPLOY_SSH_KEY }}
+        source: "."
+        target: "/var/www/scheduling-system"
+        strip_components: 0
+        overwrite: true
+
+    - name: Run Remote Commands
+      uses: appleboy/ssh-action@v0.1.8
+      with:
+        host: ${{ secrets.DEPLOY_HOST }}
+        username: ${{ secrets.DEPLOY_USER }}
+        key: ${{ secrets.DEPLOY_SSH_KEY }}
+        script: |
+          cd /var/www/scheduling-system
+          composer install --optimize-autoloader --no-dev
+          php vendor/bin/phinx migrate
+          chmod -R 755 storage/ public/
+          echo "✅ Deployment complete!"
+
+# ==================================================
+# 📦 ARTIFACT: Save Build Output (Optional)
+# ==================================================
+artifact:
+  needs: [lint, test]
+  runs-on: ubuntu-latest
+  name: Upload Artifact
+
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Archive Code
+      run: zip -r scheduling-system.zip . -x "*.git*" "node_modules/*" "tests/*" "*.md"
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: scheduling-system-build
+        path: scheduling-system.zip

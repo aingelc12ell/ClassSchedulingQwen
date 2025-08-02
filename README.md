@@ -15,6 +15,8 @@ Improvements and updates are generated from other models and AI tools. Integrati
 - Frontend Dashboard (jQuery + Bootstrap)
 - Input Validation & Error Handling
 - Modular, Maintainable Codebase
+- Docker Compose Support (PHP 8.4 + MySQL 8.0)
+- GitHub Actions CI/CD Pipeline
 
 ## Project Structure
 ```
@@ -34,8 +36,23 @@ Improvements and updates are generated from other models and AI tools. Integrati
 │   └── Routes/           # API route definitions
 ├── migrations/           # Database schema migrations v1
 ├── tests/                # Unit and functionality test snippets
+├── vendor/
 ├── .env[.sample]         # Environment variables
-└── composer.json         # PHP dependencies
+├── docker-compose.yml    # Main services
+├── .github/
+│   └── workflows/
+│       └── ci.yml        # CI pipeline
+├── docker/
+│   ├── nginx/
+│   │   └── conf.d
+│   │      └── app.conf  
+│   └── php/
+│       ├── Dockerfile           # Custom PHP image
+│       └── php.ini
+├── phinx.php
+├── composer.json
+└── README.md
+
 ```
 ## Getting Started
 
@@ -50,17 +67,7 @@ Improvements and updates are generated from other models and AI tools. Integrati
 ```
 3. Set Up Environment
 
-    Create .env file:
-```
-   DB_HOST=localhost
-   DB_PORT=3306
-   DB_DATABASE=scheduling_db
-   DB_USERNAME=root
-   DB_PASSWORD=password
-   
-   JWT_SECRET=your_strong_32char_secret_key_here_12345678
-   JWT_EXPIRATION=3600
-```
+    Copy .env.sample and save as .env:
 4. Set Up Database
    
     Run migrations manually or use Phinx:
