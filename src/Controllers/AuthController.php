@@ -1,6 +1,7 @@
 <?php
 namespace App\Controllers;
 
+use App\Helpers\ResponseHelper;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use App\Models\User;
@@ -17,14 +18,14 @@ class AuthController
         $user = User::where('username', $username)->first();
 
         if (!$user || !$user->verifyPassword($password)) {
-            return $response->withJson([
+            return ResponseHelper::json($response,[
                 'error' => 'Invalid username or password'
             ], 401);
         }
 
         $token = $user->createToken();
 
-        return $response->withJson([
+        return ResponseHelper::json($response,[
             'token' => $token,
             'user' => [
                 'id' => $user->id,
@@ -41,16 +42,16 @@ class AuthController
         $user = User::getUserFromToken($token);
 
         if (!$user) {
-            return $response->withJson(['error' => 'User not found'], 404);
+            return ResponseHelper::json($response,['error' => 'User not found'], 404);
         }
 
-        return $response->withJson(['user' => $user], 200);
+        return ResponseHelper::json($response,['user' => $user], 200);
     }
 
     public function logout(Request $request, Response $response): Response
     {
         // JWT is stateless; logout = client-side token discard
         // Optionally implement a token blacklist (DB or Redis) if needed
-        return $response->withJson(['message' => 'Logged out. Discard token.'], 200);
+        return ResponseHelper::json($response,['message' => 'Logged out. Discard token.'], 200);
     }
 }

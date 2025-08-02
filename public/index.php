@@ -27,19 +27,9 @@ $app = Bridge::create($container);
 
 $routes = require __DIR__ . '/../src/Routes/routes.php';
 $routes($app);
-// Modular Route Includes
-# (require __DIR__ . '/../src/Routes/admin.php')($app);
-# (require __DIR__ . '/../src/Routes/protected.php')($app);
-# (require __DIR__ . '/../src/Routes/public.php')($app);
 
-$app->add(function ($request, $handler) {
-    $response = $handler->handle($request);
-    return $response
-        ->withHeader('Access-Control-Allow-Origin', 'http://localhost:3000') // Allow your frontend
-        ->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization')
-        ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
-        ->withHeader('Access-Control-Allow-Credentials', 'true');
-});
+$app->add(require __DIR__ . '/../config/cors.php');
+$app->add(require __DIR__ . '/../config/notfound.php');
 
 $app->run();
 

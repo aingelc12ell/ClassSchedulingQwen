@@ -1,6 +1,7 @@
 <?php
 namespace App\Controllers;
 
+use App\Helpers\ResponseHelper;
 use App\Services\ValidationService;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -16,11 +17,11 @@ class TeacherController
         /*$required = ['id', 'name', 'qualifiedSubjectIds'];
         $missing = array_filter($required, fn($key) => !isset($data[$key]));
         if (!empty($missing)) {
-            return $response->withJson(['error' => 'Missing fields', 'fields' => $missing], 400);
+            return ResponseHelper::json($response,['error' => 'Missing fields', 'fields' => $missing], 400);
         }
 
         if (!is_array($data['qualifiedSubjectIds'])) {
-            return $response->withJson(['error' => 'qualifiedSubjectIds must be an array'], 400);
+            return ResponseHelper::json($response,['error' => 'qualifiedSubjectIds must be an array'], 400);
         }*/
 
         $rules = [
@@ -31,7 +32,7 @@ class TeacherController
         ];
 
         if (!$validator->validate($data, $rules)) {
-            return $response->withJson(['errors' => $validator->getErrors()], 400);
+            return ResponseHelper::json($response,['errors' => $validator->getErrors()], 400);
         }
 
         try {
@@ -41,15 +42,15 @@ class TeacherController
                 'qualified_subject_ids' => json_encode($data['qualifiedSubjectIds']),
             ]);
 
-            return $response->withJson(['teacher' => $teacher], 201);
+            return ResponseHelper::json($response,['teacher' => $teacher], 201);
         } catch (\Exception $e) {
-            return $response->withJson(['error' => 'Failed to create teacher'], 500);
+            return ResponseHelper::json($response,['error' => 'Failed to create teacher'], 500);
         }
     }
 
     public function list(Request $request, Response $response): Response
     {
         $teachers = TeacherModel::all();
-        return $response->withJson(['teachers' => $teachers], 200);
+        return ResponseHelper::json($response,['teachers' => $teachers], 200);
     }
 }

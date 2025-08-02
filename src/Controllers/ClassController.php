@@ -1,6 +1,7 @@
 <?php
 namespace App\Controllers;
 
+use App\Helpers\ResponseHelper;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use App\Models\ClassModel;
@@ -33,7 +34,7 @@ class ClassController
         ];
 
         if (!$validator->validate($data, $rules)) {
-            return $response->withJson([
+            return ResponseHelper::json($response,[
                 'error' => 'Validation failed',
                 'errors' => $validator->getErrors()
             ], 400);
@@ -43,17 +44,17 @@ class ClassController
         // $required = ['class_id', 'subject_id', 'teacher_id', 'room_id', 'time_slot_id', 'day', 'term'];
         // $missing = array_filter($required, fn($key) => !isset($data[$key]));
         // if (!empty($missing)) {
-        //     return $response->withJson(['error' => 'Missing fields', 'fields' => $missing], 400);
+        //     return ResponseHelper::json($response,['error' => 'Missing fields', 'fields' => $missing], 400);
         // }
         //
         // // Validate day format (3 characters)
         // if (strlen($data['day']) !== 3) {
-        //     return $response->withJson(['error' => 'Day must be 3 characters (e.g., Mon, Tue)'], 400);
+        //     return ResponseHelper::json($response,['error' => 'Day must be 3 characters (e.g., Mon, Tue)'], 400);
         // }
         //
         // // Validate time_slot_id is numeric
         // if (!is_numeric($data['time_slot_id'])) {
-        //     return $response->withJson(['error' => 'time_slot_id must be numeric'], 400);
+        //     return ResponseHelper::json($response,['error' => 'time_slot_id must be numeric'], 400);
         // }
 
         try {
@@ -68,9 +69,9 @@ class ClassController
                 'is_override' => $data['is_override'] ?? false,
             ]);
 
-            return $response->withJson(['class' => $class], 201);
+            return ResponseHelper::json($response,['class' => $class], 201);
         } catch (\Exception $e) {
-            return $response->withJson(['error' => 'Failed to create class'], 500);
+            return ResponseHelper::json($response,['error' => 'Failed to create class'], 500);
         }
     }
     public function generateSchedule(Request $request, Response $response): Response
@@ -151,7 +152,7 @@ class ClassController
     {
         $class = ClassModel::find($args['id']);
         if ($class && !$class->is_override) {
-            return $response->withJson(['error' => 'Cannot delete auto-generated class'], 400);
+            return ResponseHelper::json($response,['error' => 'Cannot delete auto-generated class'], 400);
         }
         $class?->delete();
 

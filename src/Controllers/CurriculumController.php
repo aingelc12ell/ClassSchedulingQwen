@@ -1,6 +1,7 @@
 <?php
 namespace App\Controllers;
 
+use App\Helpers\ResponseHelper;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use App\Models\Curriculum as CurriculumModel;
@@ -22,7 +23,7 @@ class CurriculumController
         ];
 
         if (!$validator->validate($data, $rules)) {
-            return $response->withJson([
+            return ResponseHelper::json($response,[
                 'error' => 'Validation failed',
                 'errors' => $validator->getErrors()
             ], 400);
@@ -32,11 +33,11 @@ class CurriculumController
         // $required = ['id', 'name', 'term', 'subjectIds'];
         // $missing = array_filter($required, fn($key) => !isset($data[$key]));
         // if (!empty($missing)) {
-        //     return $response->withJson(['error' => 'Missing fields', 'fields' => $missing], 400);
+        //     return ResponseHelper::json($response,['error' => 'Missing fields', 'fields' => $missing], 400);
         // }
         //
         // if (!is_array($data['subjectIds'])) {
-        //     return $response->withJson(['error' => 'subjectIds must be an array'], 400);
+        //     return ResponseHelper::json($response,['error' => 'subjectIds must be an array'], 400);
         // }
 
         try {
@@ -47,9 +48,9 @@ class CurriculumController
                 'subject_ids' => json_encode($data['subjectIds']),
             ]);
 
-            return $response->withJson(['curriculum' => $curriculum], 201);
+            return ResponseHelper::json($response,['curriculum' => $curriculum], 201);
         } catch (\Exception $e) {
-            return $response->withJson(['error' => 'Failed to create curriculum'], 500);
+            return ResponseHelper::json($response,['error' => 'Failed to create curriculum'], 500);
         }
     }
 
@@ -61,6 +62,6 @@ class CurriculumController
             $query->where('term', $term);
         }
         $curriculums = $query->get();
-        return $response->withJson(['curriculums' => $curriculums], 200);
+        return ResponseHelper::json($response,['curriculums' => $curriculums], 200);
     }
 }

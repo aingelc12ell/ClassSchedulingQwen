@@ -1,6 +1,7 @@
 <?php
 namespace App\Controllers;
 
+use App\Helpers\ResponseHelper;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use App\Models\ConflictExemption;
@@ -22,7 +23,7 @@ class ExemptionController
         ];
 
         if (!$validator->validate($data, $rules)) {
-            return $response->withJson([
+            return ResponseHelper::json($response,[
                 'error' => 'Validation failed',
                 'errors' => $validator->getErrors()
             ], 400);
@@ -32,26 +33,26 @@ class ExemptionController
         // $required = ['type', 'entity_id', 'conflict_type', 'reason'];
         // $missing = array_filter($required, fn($key) => !isset($data[$key]));
         // if (!empty($missing)) {
-        //     return $response->withJson(['error' => 'Missing fields', 'fields' => $missing], 400);
+        //     return ResponseHelper::json($response,['error' => 'Missing fields', 'fields' => $missing], 400);
         // }
         //
         // // Validate type field
         // $validTypes = ['student', 'teacher', 'room'];
         // if (!in_array($data['type'], $validTypes)) {
-        //     return $response->withJson(['error' => 'Type must be one of: ' . implode(', ', $validTypes)], 400);
+        //     return ResponseHelper::json($response,['error' => 'Type must be one of: ' . implode(', ', $validTypes)], 400);
         // }
         //
         // // Validate conflict_type field
         // $validConflictTypes = ['schedule', 'capacity'];
         // if (!in_array($data['conflict_type'], $validConflictTypes)) {
-        //     return $response->withJson(['error' => 'Conflict type must be one of: ' . implode(', ', $validConflictTypes)], 400);
+        //     return ResponseHelper::json($response,['error' => 'Conflict type must be one of: ' . implode(', ', $validConflictTypes)], 400);
         // }
         //
         // // Validate expires_at if provided
         // if (isset($data['expires_at']) && $data['expires_at'] !== null) {
         //     $expiresAt = strtotime($data['expires_at']);
         //     if ($expiresAt === false) {
-        //         return $response->withJson(['error' => 'expires_at must be a valid datetime'], 400);
+        //         return ResponseHelper::json($response,['error' => 'expires_at must be a valid datetime'], 400);
         //     }
         // }
 
@@ -64,9 +65,9 @@ class ExemptionController
                 'expires_at' => $data['expires_at'] ?? null,
             ]);
 
-            return $response->withJson(['exemption' => $exemption], 201);
+            return ResponseHelper::json($response,['exemption' => $exemption], 201);
         } catch (\Exception $e) {
-            return $response->withJson(['error' => 'Failed to create exemption'], 500);
+            return ResponseHelper::json($response,['error' => 'Failed to create exemption'], 500);
         }
     }
 

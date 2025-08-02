@@ -8,7 +8,7 @@ $rules = [
 ];
 
 if (!$validator->validate($data, $rules)) {
-    return $response->withJson(['errors' => $validator->getErrors()], 400);
+    return ResponseHelper::json($response,['errors' => $validator->getErrors()], 400);
 }
 
 ## conflict exemption
@@ -30,5 +30,5 @@ $rules = [
 ];
 
 if (!$validator->validate($data, $rules)) {
-    return $response->withJson(['errors' => $validator->getErrors()], 400);
+    return ResponseHelper::json($response,['errors' => $validator->getErrors()], 400);
 }

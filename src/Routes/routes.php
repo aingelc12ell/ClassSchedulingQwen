@@ -8,9 +8,25 @@ use App\Controllers\StudentController;
 use App\Controllers\SubjectController;
 use App\Controllers\TeacherController;
 use App\Controllers\TimeSlotController;
+use App\Helpers\ResponseHelper;
+use Illuminate\Support\Facades\DB;
 use Slim\App;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Message\ResponseInterface as Response;
 
 return function (App $app) {
+    $app->get('/test', function ($request, $response) {
+        return ResponseHelper::json($response, ['status' => 'OK : ' . date('Y-m-d H:i:s')]);
+    });
+    $app->get('/health/db', function (Request $request, Response $response) {
+        try {
+            DB::connection()->getPdo();
+            return ResponseHelper::json($response,['status' => 'OK', 'database' => 'Connected']);
+        } catch (\Exception $e) {
+            return ResponseHelper::json($response,['status' => 'Error', 'database' => $e->getMessage()], 500);
+        }
+    });
+
     // Students
     $app->post('/students', [StudentController::class, 'create']);
     $app->get('/students', [StudentController::class, 'list']);

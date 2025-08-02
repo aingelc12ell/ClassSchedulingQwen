@@ -1,6 +1,7 @@
 <?php
 namespace App\Controllers;
 
+use App\Helpers\ResponseHelper;
 use App\Services\ValidationService;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -22,7 +23,7 @@ class SubjectController
         ];
 
         if (!$validator->validate($data, $rules)) {
-            return $response->withJson(['errors' => $validator->getErrors()], 400);
+            return ResponseHelper::json($response,['errors' => $validator->getErrors()], 400);
         }
 
         try {
@@ -33,15 +34,15 @@ class SubjectController
                 'weekly_hours' => (int)$data['weeklyHours'],
             ]);
 
-            return $response->withJson(['subject' => $subject], 201);
+            return ResponseHelper::json($response,['subject' => $subject], 201);
         } catch (\Exception $e) {
-            return $response->withJson(['error' => 'Failed to create subject'], 500);
+            return ResponseHelper::json($response,['error' => 'Failed to create subject'], 500);
         }
     }
 
     public function list(Request $request, Response $response): Response
     {
         $subjects = SubjectModel::all();
-        return $response->withJson(['subjects' => $subjects], 200);
+        return ResponseHelper::json($response,['subjects' => $subjects], 200);
     }
 }

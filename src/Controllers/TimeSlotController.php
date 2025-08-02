@@ -1,6 +1,7 @@
 <?php
 namespace App\Controllers;
 
+use App\Helpers\ResponseHelper;
 use App\Services\ValidationService;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -21,19 +22,19 @@ class TimeSlotController
         ];
 
         if (!$validator->validate($data, $rules)) {
-            return $response->withJson(['errors' => $validator->getErrors()], 400);
+            return ResponseHelper::json($response,['errors' => $validator->getErrors()], 400);
         }
 
         /*$required = ['label', 'start_time', 'end_time'];
         $missing = array_filter($required, fn($key) => !isset($data[$key]));
         if (!empty($missing)) {
-            return $response->withJson(['error' => 'Missing fields', 'fields' => $missing], 400);
+            return ResponseHelper::json($response,['error' => 'Missing fields', 'fields' => $missing], 400);
         }
 
         // Validate time format (simplified)
         $timePattern = '/^\d{2}:\d{2}$/';
         if (!preg_match($timePattern, $data['start_time']) || !preg_match($timePattern, $data['end_time'])) {
-            return $response->withJson(['error' => 'Invalid time format, use HH:MM'], 400);
+            return ResponseHelper::json($response,['error' => 'Invalid time format, use HH:MM'], 400);
         }*/
 
         try {
@@ -44,9 +45,9 @@ class TimeSlotController
                 'is_active' => $data['is_active'] ?? true,
             ]);
 
-            return $response->withJson(['timeSlot' => $timeSlot], 201);
+            return ResponseHelper::json($response,['timeSlot' => $timeSlot], 201);
         } catch (\Exception $e) {
-            return $response->withJson(['error' => 'Failed to create time slot'], 500);
+            return ResponseHelper::json($response,['error' => 'Failed to create time slot'], 500);
         }
     }
 
@@ -58,14 +59,14 @@ class TimeSlotController
             $query->where('is_active', true);
         }
         $timeSlots = $query->get();
-        return $response->withJson(['timeSlots' => $timeSlots], 200);
+        return ResponseHelper::json($response,['timeSlots' => $timeSlots], 200);
     }
 
     public function update(Request $request, Response $response, array $args): Response
     {
         $timeSlot = TimeSlotModel::find($args['id']);
         if (!$timeSlot) {
-            return $response->withJson(['error' => 'Time slot not found'], 404);
+            return ResponseHelper::json($response,['error' => 'Time slot not found'], 404);
         }
 
         $data = $request->getParsedBody();
@@ -77,6 +78,6 @@ class TimeSlotController
         ]);
         $timeSlot->save();
 
-        return $response->withJson(['timeSlot' => $timeSlot], 200);
+        return ResponseHelper::json($response,['timeSlot' => $timeSlot], 200);
     }
 }

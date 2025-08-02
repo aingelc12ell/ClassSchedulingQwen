@@ -8,8 +8,8 @@ $app->post('/auth/login', [App\Controllers\AuthController::class, 'login']);
 $app->get('/health/db', function ($request, $response) {
     try {
         DB::connection()->getPdo();
-        return $response->withJson(['status' => 'OK', 'database' => 'Connected']);
+        return ResponseHelper::json($response,['status' => 'OK', 'database' => 'Connected']);
     } catch (\Exception $e) {
-        return $response->withJson(['status' => 'Error', 'database' => $e->getMessage()], 500);
+        return ResponseHelper::json($response,['status' => 'Error', 'database' => $e->getMessage()], 500);
     }
 });

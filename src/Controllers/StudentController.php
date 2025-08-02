@@ -1,6 +1,7 @@
 <?php
 namespace App\Controllers;
 
+use App\Helpers\ResponseHelper;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use App\Models\Student as StudentModel;
@@ -22,7 +23,7 @@ class StudentController
         ];
 
         if (!$validator->validate($data, $rules)) {
-            return $response->withJson([
+            return ResponseHelper::json($response,[
                 'error' => 'Validation failed',
                 'errors' => $validator->getErrors()
             ], 400);
@@ -33,7 +34,7 @@ class StudentController
         // $missing = array_filter($required, fn($key) => !isset($data[$key]));
         // if (!empty($missing)) {
         //     $payload = ['error' => 'Missing fields', 'fields' => $missing];
-        //     return $response->withJson($payload, 400);
+        //     return ResponseHelper::json($response,$payload, 400);
         // }
 
         try {
@@ -44,9 +45,9 @@ class StudentController
                 'enrollmentCount' => $data['enrollmentCount'] ?? 1,
             ]);
 
-            return $response->withJson(['student' => $student], 201);
+            return ResponseHelper::json($response,['student' => $student], 201);
         } catch (\Exception $e) {
-            return $response->withJson(['error' => 'Failed to create student'], 500);
+            return ResponseHelper::json($response,['error' => 'Failed to create student'], 500);
         }
     }
 
@@ -60,6 +61,6 @@ class StudentController
         }
 
         $students = $query->get();
-        return $response->withJson(['students' => $students], 200);
+        return ResponseHelper::json($response,['students' => $students], 200);
     }
 }
