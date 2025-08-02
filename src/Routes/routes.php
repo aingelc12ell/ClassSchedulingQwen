@@ -9,18 +9,24 @@ use App\Controllers\SubjectController;
 use App\Controllers\TeacherController;
 use App\Controllers\TimeSlotController;
 use App\Helpers\ResponseHelper;
-use Illuminate\Support\Facades\DB;
+# use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Capsule\Manager as Capsule;
 use Slim\App;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 
 return function (App $app) {
+    $app->get('/',function($request,$response){
+
+    });
+
+    // Dev helpers
     $app->get('/test', function ($request, $response) {
         return ResponseHelper::json($response, ['status' => 'OK : ' . date('Y-m-d H:i:s')]);
     });
     $app->get('/health/db', function (Request $request, Response $response) {
         try {
-            DB::connection()->getPdo();
+            Capsule::connection()->getPdo();
             return ResponseHelper::json($response,['status' => 'OK', 'database' => 'Connected']);
         } catch (\Exception $e) {
             return ResponseHelper::json($response,['status' => 'Error', 'database' => $e->getMessage()], 500);

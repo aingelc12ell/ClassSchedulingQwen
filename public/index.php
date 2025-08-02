@@ -5,6 +5,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 
 use DI\Bridge\Slim\Bridge;
+use DI\ContainerBuilder;
 use App\Middleware\{JsonBodyParserMiddleware, JwtAuthMiddleware};
 
 # $app = AppFactory::create();
@@ -14,19 +15,26 @@ $app->add(new JsonBodyParserMiddleware());
 $app->add(new JwtAuthMiddleware());
 
 
-// Load DB connection and Eloquent
-require_once __DIR__ . '/../config/database.php';
 
 #$container = $app->getContainer();
-$builder = new \DI\ContainerBuilder();
+$builder = new ContainerBuilder();
 $builder->enableCompilation(dirname(__DIR__) . '/tmp');
 $builder->writeProxiesToFile(true, dirname(__DIR__) . '/tmp/proxies');
 $container = $builder->build();
 
+// Load DB connection and Eloquent
+$capsule = require __DIR__ . '/../config/database.php';
+
+
 $app = Bridge::create($container);
 
-$routes = require __DIR__ . '/../src/Routes/routes.php';
-$routes($app);
+# $routes = require __DIR__ . '/../src/Routes/routes.php';
+# $routes($app);
+
+require __DIR__ . '/../src/Routes/admin.php';
+require __DIR__ . '/../src/Routes/protected.php';
+require __DIR__ . '/../src/Routes/public.php';
+
 
 $app->add(require __DIR__ . '/../config/cors.php');
 $app->add(require __DIR__ . '/../config/notfound.php');

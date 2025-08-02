@@ -7,7 +7,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 $dotenv = Dotenv::createImmutable(__DIR__ . '/..');
 $dotenv->load();
 
-$capsule = new Capsule;
+$capsule = new Capsule();
 
 $capsule->addConnection([
     'driver'    => 'mysql',
@@ -30,6 +30,6 @@ $capsule->setAsGlobal();
 $capsule->bootEloquent();
 
 // Optional: Enable query logging (for debugging)
-// $capsule->getConnection()->enableQueryLog();
+$capsule->getConnection()->enableQueryLog();
 
 return $capsule;
