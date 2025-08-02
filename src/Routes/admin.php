@@ -9,6 +9,6 @@ $app->group('/admin', function (RouteCollectorProxy $group) {
     });
 })->add(function ($request, $handler) use ($container) {
     // Admin authentication middleware
-    $adminMiddleware = App\Middleware\AuthMiddleware::requireAdmin($container->get('authService'));
+    $adminMiddleware = App\Middleware\JwtAuthMiddleware::requireAdmin($container->get('authService'));
     return $adminMiddleware($request, $handler);
 });
