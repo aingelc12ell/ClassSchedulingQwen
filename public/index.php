@@ -25,12 +25,12 @@ $container = $builder->build();
 
 $app = Bridge::create($container);
 
-# $routes = require __DIR__ . '/../src/Routes/routes.php';
-# $routes($app);
+$routes = require __DIR__ . '/../src/Routes/routes.php';
+$routes($app);
 // Modular Route Includes
-(require __DIR__ . '/../src/Routes/admin.php')($app);
-(require __DIR__ . '/../src/Routes/protected.php')($app);
-(require __DIR__ . '/../src/Routes/public.php')($app);
+# (require __DIR__ . '/../src/Routes/admin.php')($app);
+# (require __DIR__ . '/../src/Routes/protected.php')($app);
+# (require __DIR__ . '/../src/Routes/public.php')($app);
 
 $app->add(function ($request, $handler) {
     $response = $handler->handle($request);
