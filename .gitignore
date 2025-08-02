@@ -1,7 +1,7 @@
 /.idea
 /vendor
-composer.lock
-composer.phar
-.env
+/composer.lock
+/composer.phar
+/.env
 /phinx.yml
 /phinx.php
