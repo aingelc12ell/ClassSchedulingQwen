@@ -21,6 +21,10 @@ Improvements and updates are generated from other models and AI tools. Integrati
 /scheduling-system/
 ├── client/               # Frontend Dashboard (can be installed or ran separately)
 ├── config/               # Configuration files
+├── docs/                 # Documentations and notes
+├── db/                   # Database schema
+│   ├── migrations/       # DB Migration using Phinx
+│   └── seeds/            # Phinx seeds
 ├── public/               # Public entry point (index.php)
 ├── src/
 │   ├── Controllers/      # API logic
@@ -28,9 +32,9 @@ Improvements and updates are generated from other models and AI tools. Integrati
 │   ├── Services/         # Business logic (e.g., SchedulingEngine)
 │   ├── Middleware/       # Request processing (auth, JSON parsing)
 │   └── Routes/           # API route definitions
-├── migrations/           # Database schema migrations
+├── migrations/           # Database schema migrations v1
 ├── tests/                # Unit and functionality test snippets
-├── .env                  # Environment variables
+├── .env[.sample]         # Environment variables
 └── composer.json         # PHP dependencies
 ```
 ## Getting Started
