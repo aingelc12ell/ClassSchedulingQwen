@@ -7,7 +7,8 @@
     "firebase/php-jwt": "^6.11",
     "slim/psr7": "^1.7",
     "vlucas/phpdotenv": "^5.6",
-    "robmorgan/phinx": "^0.16.10"
+    "robmorgan/phinx": "^0.16.10",
+    "php-di/slim-bridge": "^3.4"
   },
   "autoload": {
     "psr-4": {
@@ -25,4 +26,3 @@
     "seed": "vendor/bin/phinx seed:run"
   }
 }
-

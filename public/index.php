@@ -3,15 +3,24 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
+use DI\Bridge\Slim\Bridge;
+use DI\Container;
 use Slim\Factory\AppFactory;
 use App\Middleware\{JsonBodyParserMiddleware, JwtAuthMiddleware};
 
-$app = AppFactory::create();
+# $app = AppFactory::create();
+$app = Bridge::create();
 $app->addBodyParsingMiddleware();
 $app->add(new JsonBodyParserMiddleware());
 $app->add(new JwtAuthMiddleware());
 
-$container = $app->getContainer();
+#$container = $app->getContainer();
+$builder = new \DI\ContainerBuilder();
+$builder->enableCompilation($_ENV['CONTAINER_DIR']);
+$builder->writeProxiesToFile(true, $_ENV['CONTAINER_DIR'] . '/proxies');
+$container = $builder->build();
+
+$app = Bridge::create($container);
 $container->get('response')->addBodyTransformer(function ($response, $data) {
     if (is_array($data) || is_object($data)) {
         $json = json_encode($data, JSON_PRETTY_PRINT);
