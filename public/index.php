@@ -21,14 +21,14 @@ $builder->writeProxiesToFile(true, dirname(__DIR__) . '/tmp/proxies');
 $container = $builder->build();
 
 $app = Bridge::create($container);
-$container->get('response')->addBodyTransformer(function ($response, $data) {
+/*$container->get('response')->addBodyTransformer(function ($response, $data) {
     if (is_array($data) || is_object($data)) {
         $json = json_encode($data, JSON_PRETTY_PRINT);
         $response->getBody()->write($json);
         return $response->withHeader('Content-Type', 'application/json');
     }
     return $response;
-});
+});*/
 
 $routes = require __DIR__ . '/../src/Routes/routes.php';
 $routes($app);
