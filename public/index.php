@@ -3,9 +3,10 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
+// Load DB connection and Eloquent
+require_once __DIR__ . '/../config/database.php';
+
 use DI\Bridge\Slim\Bridge;
-use DI\Container;
-use Slim\Factory\AppFactory;
 use App\Middleware\{JsonBodyParserMiddleware, JwtAuthMiddleware};
 
 # $app = AppFactory::create();
@@ -21,14 +22,6 @@ $builder->writeProxiesToFile(true, dirname(__DIR__) . '/tmp/proxies');
 $container = $builder->build();
 
 $app = Bridge::create($container);
-/*$container->get('response')->addBodyTransformer(function ($response, $data) {
-    if (is_array($data) || is_object($data)) {
-        $json = json_encode($data, JSON_PRETTY_PRINT);
-        $response->getBody()->write($json);
-        return $response->withHeader('Content-Type', 'application/json');
-    }
-    return $response;
-});*/
 
 $routes = require __DIR__ . '/../src/Routes/routes.php';
 $routes($app);
